@@ -1,4 +1,6 @@
 import type { z } from 'zod'
+
+import type { HierarchyViolation } from './hierarchy/types'
 import type {
   Schema_AdEntity,
   Schema_AdType,
@@ -77,4 +79,100 @@ export type Hierarchy = z.infer<typeof Schema_Hierarchy>
 export interface ISizeParts {
   width: number
   height: number
+}
+
+export type HierarchyVersionStatus = 'ok' | 'needs_clarification'
+export type TranslationMessageRole = 'user' | 'assistant'
+export type HierarchyVersionPointerMap = Partial<Record<CampaignType, string>>
+
+export type CreateJobInput = {
+  platform: MediaPlatform
+  sourceFileRef: string
+  modelId: string
+  plan: Plan
+}
+
+export type AppendHierarchyVersionInput = {
+  jobId: string
+  campaignType: CampaignType
+  hierarchy: Hierarchy
+  status: HierarchyVersionStatus
+  validationErrors: HierarchyViolation[] | null
+  changeSummary: string | null
+}
+
+export type CreatePlanVersionInput = {
+  jobId: string
+  messageId: string | null
+  pointerMap: HierarchyVersionPointerMap
+}
+
+export type CreateMessageInput = {
+  jobId: string
+  role: TranslationMessageRole
+  content: string
+  resultingVersionIds: string[]
+}
+
+export type DemoUserRecord = {
+  id: string
+  name: string
+  createdAt: Date
+}
+
+export type JobRecord = {
+  id: string
+  ownerId: string
+  platform: MediaPlatform
+  sourceFileRef: string
+  modelId: string
+  plan: Plan
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type HierarchyVersionRecord = {
+  id: string
+  jobId: string
+  campaignType: CampaignType
+  versionNumber: number
+  hierarchy: Hierarchy
+  status: HierarchyVersionStatus
+  validationErrors: HierarchyViolation[] | null
+  changeSummary: string | null
+  createdAt: Date
+}
+
+export type PlanVersionRecord = {
+  id: string
+  jobId: string
+  versionNumber: number
+  messageId: string | null
+  pointerMap: HierarchyVersionPointerMap
+  createdAt: Date
+}
+
+export type MessageRecord = {
+  id: string
+  jobId: string
+  role: TranslationMessageRole
+  content: string
+  resultingVersionIds: string[]
+  createdAt: Date
+}
+
+export type ResolvedPlanVersion = {
+  planVersion: PlanVersionRecord
+  hierarchyVersions: HierarchyVersionRecord[]
+}
+
+export interface ITranslationRepository {
+  ensureDemoUser(): Promise<DemoUserRecord>
+  createJob(input: CreateJobInput): Promise<JobRecord>
+  findJobById(id: string): Promise<JobRecord | null>
+  appendHierarchyVersion(input: AppendHierarchyVersionInput): Promise<HierarchyVersionRecord>
+  createPlanVersion(input: CreatePlanVersionInput): Promise<PlanVersionRecord>
+  resolvePlanVersion(id: string): Promise<ResolvedPlanVersion | null>
+  createMessage(input: CreateMessageInput): Promise<MessageRecord>
+  findMessageById(id: string): Promise<MessageRecord | null>
 }
