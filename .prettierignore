@@ -20,3 +20,6 @@ skills-lock.json
 
 # misc
 public
+
+# domain-knowledge documents loaded verbatim into prompts — keep them byte-identical
+src/lib/translation/knowledge/documents

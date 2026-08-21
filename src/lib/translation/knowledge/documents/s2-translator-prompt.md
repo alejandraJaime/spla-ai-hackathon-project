@@ -3,7 +3,7 @@
 > System prompt for **STEP 2 — Translate**.
 > Used with `generateObject({ schema: HierarchySchema, ... })`.
 > Provide as context: `output-plan.json` (the user message), the **field
-> dictionary** (`taxonomy-fields.md`), and the **campaign-spec** (`campaign-spec.md`).
+> dictionary** (`taxonomy-fields.json`), and the **campaign-spec** (`campaign-spec.md`).
 
 ---
 
@@ -41,8 +41,8 @@ campaign for the whole plan — following the campaign-spec exactly for each.
 3. **Snap every value to the dictionary.** If a plan value isn't an allowed value,
    choose the nearest allowed one and record an assumption. Sizes must be from the
    dictionary's Size list.
-4. **Names** follow campaign-spec §3, using dictionary spelling (e.g. `300 x 250`
-   in names even though the plan carried `300x250`).
+4. **Names** follow campaign-spec §3, using dictionary spelling (e.g. `300 x 250`,
+   the canonical spaced form the plan already carries).
 5. **CM360 mechanics** (compatibility, creative type, ad type) from campaign-spec §5.
 6. **Defaults for missing data** from campaign-spec §6 — apply the default **and**
    log the assumption. Never fill silently.

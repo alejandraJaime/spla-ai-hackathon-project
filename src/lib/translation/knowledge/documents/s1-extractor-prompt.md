@@ -34,7 +34,8 @@ plan says, with every gap flagged.
    (`channel`, `format`): "banners" → `DISPLAY`; "floodlight"/"pixel"/"tracking"
    → `TRACKING`; "pre-roll"/"YouTube" → `VIDEO`. Do **not** map to the fine
    taxonomy values — that's the translator's job.
-3. **Sizes.** Emit each as `WIDTHxHEIGHT` with **no spaces** (`300x250`). If the
+3. **Sizes.** Emit each in the dictionary spelling `WIDTH x HEIGHT` with **single
+   spaces around the `x`** (`300 x 250`, `1 x 1`, `1920 x 1080`). If the
    plan says "responsive", "standard IAB", or omits sizes, leave `adSizes` **empty**
    and add an assumption describing exactly what was missing. Never invent sizes.
 4. **Dates → ISO 8601.** Resolve what you can: `"10/05"` → `2026-10-05` (infer year

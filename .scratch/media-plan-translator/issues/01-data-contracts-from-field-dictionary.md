@@ -8,13 +8,13 @@ The domain knowledge the pipeline needs at runtime also moves into place: the fi
 
 **Status:** ready-for-agent
 
-- [ ] The Plan contract (Step 1 output) and the Hierarchy contract (Step 2/3 output) both parse a hand-written valid example and reject a malformed one
-- [ ] Hierarchy entities are flat arrays with id references (`campaigns`, `sites`, `landingPages`, `placements`, `creatives`, `ads`), mirroring CM360's relational model rather than a strict tree; an ad references placements *and* creatives by id
-- [ ] `campaigns` is an array per ADR-0001
-- [ ] Every hard-constrained enum is derived from `taxonomy-fields.json`; adding a value to the dictionary makes the schema accept it with no second edit, proven by a test
-- [ ] Sizes accept only the canonical dictionary spelling `WIDTH x HEIGHT` with spaces; the unspaced form is rejected
-- [ ] Zod exports live in `.validation.ts` with the `Schema_` prefix and nothing else; every inferred type is exported from `.types.ts`
-- [ ] The module has its own `errors.ts` with named error classes carrying literal codes
-- [ ] The field dictionary, campaign-spec and three step prompts are readable by the server at runtime and their content is unchanged apart from the two corrections
-- [ ] `s1-extractor-prompt.md` rule 3 asks for the spaced dictionary size form; `campaign-spec.md` points at `taxonomy-fields.json`
-- [ ] `npm run typecheck` and `npm test` pass
+- [x] The Plan contract (Step 1 output) and the Hierarchy contract (Step 2/3 output) both parse a hand-written valid example and reject a malformed one
+- [x] Hierarchy entities are flat arrays with id references (`campaigns`, `sites`, `landingPages`, `placements`, `creatives`, `ads`), mirroring CM360's relational model rather than a strict tree; an ad references placements *and* creatives by id
+- [x] `campaigns` is an array per ADR-0001
+- [x] Every hard-constrained enum is derived from `taxonomy-fields.json`; adding a value to the dictionary makes the schema accept it with no second edit, proven by a test
+- [x] Sizes accept only the canonical dictionary spelling `WIDTH x HEIGHT` with spaces; the unspaced form is rejected
+- [x] Zod exports live in `.validation.ts` with the `Schema_` prefix and nothing else; every inferred type is exported from `.types.ts`
+- [x] The module has its own `errors.ts` with named error classes carrying literal codes
+- [x] The field dictionary, campaign-spec and three step prompts are readable by the server at runtime and their content is unchanged apart from the two corrections
+- [x] `s1-extractor-prompt.md` rule 3 asks for the spaced dictionary size form; `campaign-spec.md` points at `taxonomy-fields.json`
+- [x] `npm run typecheck` and `npm test` pass

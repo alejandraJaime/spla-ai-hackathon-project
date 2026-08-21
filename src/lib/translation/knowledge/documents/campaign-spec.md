@@ -2,7 +2,7 @@
 
 > **What this document is.** The structural rulebook the STEP 2 translator and
 > STEP 3 editor consult to turn a normalised media plan into a CM360 entity
-> hierarchy. The **field dictionary** (`taxonomy-fields.md`) governs *allowed
+> hierarchy. The **field dictionary** (`taxonomy-fields.json`) governs *allowed
 > values and names*; this document governs *what entities each tactic builds and
 > how they fan out*. Load both into the translator/editor prompts as context.
 >
@@ -23,7 +23,7 @@
 > **Sizes** use one canonical form everywhere — plan, hierarchy, and output — the
 > dictionary spelling `WIDTH x HEIGHT` with spaces (`300 x 250`, `1 x 1`,
 > `1920 x 1080`). When numeric width/height are needed, split the string with the
-> `splitSize()` helper in `schemas.ts`; there is no second size representation.
+> `splitSize()` helper in `translation.size.ts`; there is no second size representation.
 >
 > **Naming order:** your dictionary lists allowed values but not the token *order*
 > per entity level. §3 proposes a default taxonomy — replace it with your real
