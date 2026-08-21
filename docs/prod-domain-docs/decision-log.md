@@ -1,0 +1,29 @@
+# Decision Log
+
+An append-only, narrative record of the conversations behind this product's decisions — the reasoning and trade-offs, not just the outcome. It sits between `CLAUDE.md` (how agents should behave in this repo) and `CONTEXT.md` (the glossary of settled terms): this document is closer to a spec history — _why_ the tool works the way it does, and what got reconsidered along the way. `decisions-status.md` stays the living, mutable table of current status; this file is the durable record of how it got there.
+
+Add a new dated section per decision-making session. Don't edit past sessions except to note when a later session supersedes one.
+
+---
+
+## 2026-08-20 — Closing the open decisions (decisions-status.md §2, items A–I)
+
+Starting point: `decisions-status.md` §2 listed nine open calls (A–I) blocking a runnable demo, mostly mechanical build choices the recommendation column had already leaned on. The session worked through those, then followed threads that opened up new decisions the original two docs hadn't anticipated.
+
+### The mechanical calls (A–G) closed as recommended
+
+Model/provider, edit strategy, chat mechanics, streaming, file-upload path, and naming taxonomy all closed on the recommended option with one addition: model choice needed to be easy to change "on the UI or in `.env`," which turned into a small design of its own — `.env` holds whichever provider keys exist, the model picker feature-detects which are usable, and the chosen model is **recorded per Job** (not just a global setting) so that a later side-by-side of Flash vs. Sonnet output is actually traceable to which model produced which version. Runtime API-key entry was explicitly pushed to future scope rather than built now.
+
+Validation (F) needed more than a yes/no. The flow diagram shows an unconditional retry loop on Zod failure with no escape hatch — that's a real gap once you ask "what happens when it doesn't converge?" The answer that emerged: a 2-retry budget (3 attempts) shared across _both_ Zod shape failures and the separate §8 referential-integrity pass — deliberately not special-cased by failure type, since both ultimately need the same resolution. On exhaustion, the broken output isn't discarded — it's persisted with a `needs_clarification` status and rendered in the same tree UI with the offending parts flagged, so the user can add a natural-language clarification and retry rather than hitting a dead end. This is the first place the "surface every model uncertainty to the user" ethos from `product-prompt.md` got applied to _failure_, not just assumptions.
+
+### The cardinality reversal
+
+Item H asked to confirm "one campaign per plan" — but `decisions-status.md` §1 #12 had already _agreed_ that exact thing, so H was really asking us to reopen a closed decision, not rubber-stamp it. The reversal came from a concrete scenario: what happens when one plan has both a Display tactic and an Audio tactic? Forcing both into a single campaign object doesn't fit CM360's own model. Decided: one CM360 campaign **per distinct Campaign Type present in the plan**, not one per plan — `campaign` becomes `campaigns[]`. Recorded as [ADR-0001](../adr/0001-one-campaign-per-campaign-type.md) because it's hard to reverse (schema and pipeline shape both change), surprising against the prior agreed decision, and a genuine trade-off (simplicity vs. correctness for mixed-channel plans).
+
+Using "audio" as the example nearly expanded scope by accident: `campaign-spec.md` §7 explicitly says audio has no build pattern and is out of scope, and `taxonomy-fields.json`'s `Campaign Type` values don't include it. Checked directly with the user — "audio" was a stand-in word for "some other campaign type," not a request to add real audio support. Scope stayed at the three agreed patterns (Display, Standard Tracking, YouTube). A genuine 4th pattern (e.g. non-YouTube video) was discussed on its own merits and **deferred**: the code-side lift is small (one enum value, one §8 invariant), but it needs a real decision about what a generic video campaign fans out _by_ (duration? device? size, like Display?) — an actual design question, not a formality, and not worth spending hackathon time on without a concrete need for it.
+
+### Versioning and editing, once cardinality changed
+
+Plural campaigns forced a versioning question the original persistence model (`jobs` + `hierarchy_versions` + `messages`) didn't have to answer: if each Campaign Type has its own hierarchy, does it get its own version history? The user wanted _both_ — independent per-campaign versioning, but also a job-wide/"media-plan" version history, because a chat instruction like "change the region to EMEA" should be able to trickle down across every campaign at once.
+
+Reconciling those two without inventing a message-routing/target-inference layer (which the user had already rejected once, in the chat-mechanics discussion) led to the fan-out edit design: every chat message runs the Step-3 edit call once per existing Campaign Type hierarchy, each given the full instruction plus its own current hierarchy, and each independently decides whether the instruction is relevant to it — a call that finds nothing to do returns unchanged with `changeSummary: "No change"`, and no new version row gets created for that campaign. This means a single-campaign edit and a plan-wide edit are literally the same code path; only how many of the parallel calls produce a real diff differs. Naming settled on three distinct terms (now in `CONTEXT.md`): **Job** (persistence record), **Hierarchy Version** (per-Campaign-Type, independent numbering), **Plan Version** (user-facing, job-wide — a derived snapshot pointing at which Hierarchy Version each campaign was at, not a duplicate of the data, incrementing only when a message produces at least one real change).

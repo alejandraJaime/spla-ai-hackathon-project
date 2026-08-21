@@ -1,0 +1,183 @@
+[
+  {
+    "name": "Size",
+    "allowedValues": [
+      "1 x 1",
+      "120 x 60",
+      "120 x 600",
+      "125 x 125",
+      "160 x 600",
+      "180 x 150",
+      "200 x 200",
+      "250 x 250",
+      "300 x 250",
+      "300 x 600",
+      "320 x 50",
+      "320 x 100",
+      "336 x 280",
+      "468 x 60",
+      "728 x 90",
+      "970 x 90",
+      "970 x 250",
+      "1200 x 628",
+      "1920 x 1080"
+    ],
+    "isFreeform": false
+  },
+  {
+    "name": "Media Type",
+    "allowedValues": [
+      "Image",
+      "Video",
+      "Audio",
+      "Native",
+      "Rich Media"
+    ],
+    "isFreeform": false
+  },
+  {
+    "name": "Inventory",
+    "allowedValues": [
+      "Open Exchange",
+      "Private Marketplace",
+      "Preferred Deals",
+      "Programmatic Guaranteed"
+    ],
+    "isFreeform": false
+  },
+  {
+    "name": "Campaign Type",
+    "allowedValues": [
+      "Display",
+      "Standard Tracking",
+      "YouTube"
+    ],
+    "isFreeform": false
+  },
+  {
+    "name": "Platform",
+    "allowedValues": [
+      "Google",
+      "Facebook",
+      "Instagram",
+      "LinkedIn",
+      "TikTok",
+      "Snapchat",
+      "Twitter",
+      "Pinterest",
+      "Amazon",
+      "Other"
+    ],
+    "isFreeform": false
+  },
+  {
+    "name": "Tactic",
+    "allowedValues": [
+      "Brand Awareness",
+      "Consideration",
+      "Conversion",
+      "Retargeting",
+      "Engagement",
+      "Lead Generation"
+    ],
+    "isFreeform": false
+  },
+  {
+    "name": "Campaign Objective",
+    "allowedValues": [
+      "Brand Awareness",
+      "Reach",
+      "Traffic",
+      "Conversions",
+      "App Installs",
+      "Video Views",
+      "Lead Generation",
+      "Engagement",
+      "Sales"
+    ],
+    "isFreeform": false
+  },
+  {
+    "name": "Audience",
+    "allowedValues": [
+      "Remarketing",
+      "Similar Audience",
+      "Interest-Based",
+      "Contextual",
+      "Behavioral",
+      "Demographic",
+      "Custom Audience",
+      "Lookalike Audience"
+    ],
+    "isFreeform": false
+  },
+  {
+    "name": "Publisher",
+    "allowedValues": [
+      "Premium Publishers",
+      "Mid-Tier Publishers",
+      "Long Tail Publishers",
+      "Direct Sales",
+      "Programmatic"
+    ],
+    "isFreeform": false
+  },
+  {
+    "name": "Media Format",
+    "allowedValues": [
+      "Desktop",
+      "Mobile",
+      "Tablet",
+      "Desktop & Mobile"
+    ],
+    "isFreeform": false
+  },
+  {
+    "name": "Device",
+    "allowedValues": [
+      "Desktop",
+      "Mobile",
+      "Tablet",
+      "Connected TV",
+      "Smart Speaker"
+    ],
+    "isFreeform": false
+  },
+  {
+    "name": "Country",
+    "allowedValues": [
+      "US",
+      "CA",
+      "GB",
+      "AU",
+      "DE",
+      "FR",
+      "IT",
+      "ES",
+      "JP",
+      "BR",
+      "IN",
+      "MX",
+      "AR",
+      "SG",
+      "HK",
+      "NZ",
+      "CH",
+      "NL",
+      "SE",
+      "NO"
+    ],
+    "isFreeform": false
+  },
+  {
+    "name": "Region",
+    "allowedValues": [
+      "North America",
+      "Europe",
+      "Asia Pacific",
+      "Latin America",
+      "Middle East & Africa"
+    ],
+    "isFreeform": false
+  }
+]

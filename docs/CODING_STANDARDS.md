@@ -30,9 +30,9 @@ Rules:
 
 - **`index.ts` is a real barrel, not a dumping ground.** It re-exports only what other modules/routers are allowed to use:
   ```ts
-  export { createInvoice, cancelInvoice } from "./my-module.service";
-  export type { Invoice, InvoiceStatus } from "./my-module.types";
-  export { InvoiceNotFoundError } from "./my-module.errors";
+  export { createInvoice, cancelInvoice } from './my-module.service'
+  export type { Invoice, InvoiceStatus } from './my-module.types'
+  export { InvoiceNotFoundError } from './my-module.errors'
   ```
   `repository.ts` and internal helpers in `utils.ts` are never re-exported from `index.ts` — this keeps the module's internals swappable.
 - **`validators.ts`** holds Zod schemas used for input/output validation (tRPC procedure inputs, etc.). Do not call this file `schema.ts` — that name is reserved for Drizzle table schemas (`server/db/schema/*`) to avoid ambiguity between "validation schema" and "DB schema."
@@ -131,17 +131,17 @@ Rules:
 ```ts
 // server/errors/app-errors.ts
 export abstract class MyAppError extends Error {
-  abstract readonly code: string;
+  abstract readonly code: string
 }
 
 export class NotFoundError extends MyAppError {
-  readonly code = "NOT_FOUND" as const;
+  readonly code = 'NOT_FOUND' as const
 }
 
 export class DuplicateEmailError extends MyAppError {
-  readonly code = "DUPLICATE_EMAIL" as const;
+  readonly code = 'DUPLICATE_EMAIL' as const
   constructor(readonly email: string) {
-    super(`Email already in use: ${email}`);
+    super(`Email already in use: ${email}`)
   }
 }
 ```
@@ -159,7 +159,7 @@ Naming rules:
 - Services throw `MyAppError` subclasses for expected business failures. They never throw or import `TRPCError`.
 - The procedure attaches the app error as `cause` on a `TRPCError`:
   ```ts
-  throw new TRPCError({ code: "NOT_FOUND", cause: err });
+  throw new TRPCError({ code: 'NOT_FOUND', cause: err })
   ```
 - A single global `errorFormatter` is the **only** place that unpacks `error.cause` into the response shape:
   ```ts
@@ -170,13 +170,14 @@ Naming rules:
         ...shape,
         data: {
           ...shape.data,
-          appError: error.cause instanceof MyAppError
-            ? { code: error.cause.code, message: error.cause.message }
-            : null,
+          appError:
+            error.cause instanceof MyAppError
+              ? { code: error.cause.code, message: error.cause.message }
+              : null,
         },
-      };
+      }
     },
-  });
+  })
   ```
 - Anything that is **not** `instanceof MyAppError` is unexpected: it gets a generic client-facing message, is never enriched, and is always logged server-side with full detail.
 
@@ -200,26 +201,26 @@ switch (appError.code) {
 ## 4. Testing
 
 - Test the critical paths and business logic — service functions with real rules, not trivial CRUD passthroughs.
-- Vitest for unit/integration, React Testing Library for components, Playwright for e2e.
+- Jest for unit/integration, React Testing Library for components, Playwright for e2e.
 - Colocate tests under a module's `__tests__/` folder (§1.1).
 
 ---
 
 ## 5. Naming conventions
 
-| What | Convention | Example |
-|---|---|---|
-| Files | kebab-case | `invoice-status-badge.tsx` |
-| Functions, variables | camelCase | `createInvoice` |
-| Types, components | PascalCase | `InvoiceStatus`, `InvoiceTable` |
-| Error classes | PascalCase, suffixed `Error`, named after the business condition | `DuplicateEmailError` |
-| Error codes | SCREAMING_SNAKE_CASE string literal on the class | `"DUPLICATE_EMAIL"` |
+| What                 | Convention                                                       | Example                         |
+| -------------------- | ---------------------------------------------------------------- | ------------------------------- |
+| Files                | kebab-case                                                       | `invoice-status-badge.tsx`      |
+| Functions, variables | camelCase                                                        | `createInvoice`                 |
+| Types, components    | PascalCase                                                       | `InvoiceStatus`, `InvoiceTable` |
+| Error classes        | PascalCase, suffixed `Error`, named after the business condition | `DuplicateEmailError`           |
+| Error codes          | SCREAMING_SNAKE_CASE string literal on the class                 | `"DUPLICATE_EMAIL"`             |
 
 ---
 
 ## 6. Non-goals
 
-Things this project deliberately does *not* do, so a reviewer doesn't flag them as missing:
+Things this project deliberately does _not_ do, so a reviewer doesn't flag them as missing:
 
 - No REST API for internal use — tRPC only (§1.4).
 - No business logic in tRPC procedures or Route Handlers, even for "just this once" cases.

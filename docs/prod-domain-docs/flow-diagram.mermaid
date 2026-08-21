@@ -1,0 +1,73 @@
+flowchart TD
+    subgraph static["📚 Static context (versioned .md, loaded into prompts)"]
+        DICT["Field dictionary<br/>allowed fields · values · naming order"]
+        SPEC["Campaign-spec<br/>what each Campaign Type builds + fan-out rules<br/>(one CM360 campaign per Campaign Type — ADR-0001)"]
+        RULES["Step prompts / rules"]
+    end
+
+    subgraph ingest["1 · Ingest"]
+        U1["User uploads media plan (.xlsx)"] --> U2["Picks platform: CM360"]
+        U2 --> U3["Clicks 'Translate media plan for CM360'"]
+        U3 --> P1["Parse xlsx → CSV/JSON text<br/>(SheetJS, in a Next route/server action)<br/>reject-with-message on wrong extension / parse failure"]
+    end
+
+    subgraph translate["2 · One-time translation (chain of generateObject calls)"]
+        P1 --> S1["STEP 1 · Extract<br/>generateObject(schema = PlanSchema)"]
+        S1 --> V1{"Zod valid?<br/>(≤ 3 attempts)"}
+        V1 -- "no, retry" --> S1
+        V1 -- yes --> OP["output-plan.json"]
+        V1 -- "no, exhausted" --> ERR1["Extraction failed after 3 attempts<br/>→ surface error to user, no job created"]
+        OP --> S2["STEP 2 · Translate (one call, whole plan)<br/>generateObject(schema = HierarchySchema)<br/>resolves each tactic's Campaign Type,<br/>builds campaigns[] — one per distinct type"]
+        S2 --> V2{"Zod valid AND<br/>§8 referential integrity valid?<br/>(≤ 3 attempts)"}
+        V2 -- "no, retry" --> S2
+        V2 -- yes --> SPLIT["Split campaigns[] by Campaign Type (ADR-0001)"]
+        V2 -- "no, exhausted" --> NC1["Persist needs_clarification<br/>Hierarchy Version per affected Campaign Type<br/>(raw output + validation errors)"]
+        SPLIT --> OH["Hierarchy Version 1<br/>— one per Campaign Type present<br/>(Display / Standard Tracking / YouTube)"]
+    end
+
+    subgraph persist["3 · Persist (Drizzle / Postgres, jsonb)"]
+        J["job {id, owner=demo-user, platform, model}"]
+        OH --> VER["hierarchy_versions<br/>keyed by (job, campaignType)<br/>append-only, independent numbering per type"]
+        NC1 --> VER
+        J --> VER
+        VER --> JV["job_versions (Plan Version)<br/>{job_id, version_number=1, message_id=null,<br/>pointer map {campaignType → hierarchyVersionId}}"]
+    end
+
+    subgraph ui["4 · Review + iterate"]
+        VER --> R1["Render hierarchy tree in UI<br/>one collapsible card per Campaign Type"]
+        R1 --> C1["User sends NL edit in one shared,<br/>job-wide chat panel<br/>('add a 100x100 display placement')"]
+        C1 --> FANOUT{{"Fan out: run once per existing<br/>Campaign Type hierarchy (§1 #24)"}}
+        FANOUT --> S3["EDIT · generateObject(schema = HierarchySchema)<br/>input = this Campaign Type's current hierarchy<br/>+ the message — decides relevance itself"]
+        S3 --> V3{"Zod valid AND<br/>§8 referential integrity valid?<br/>(≤ 3 attempts)"}
+        V3 -- "no, retry" --> S3
+        V3 -- "yes, no-op" --> NOOP["changeSummary = 'No change'<br/>→ no new Hierarchy Version row"]
+        V3 -- "yes, real change" --> OH2["new Hierarchy Version for this Campaign Type<br/>+ changeSummary"]
+        V3 -- "no, exhausted" --> NC2["Persist needs_clarification<br/>Hierarchy Version for this Campaign Type"]
+        NOOP --> DONE{"Any Campaign Type<br/>produced a real change?"}
+        OH2 --> DONE
+        NC2 --> VER
+        OH2 --> VER
+        DONE -- "yes, ≥1 change" --> PV["New Plan Version N+1<br/>job_versions row: pointer map<br/>{campaignType → hierarchyVersionId}<br/>(unchanged types point at their prior version)"]
+        DONE -- "no, all no-op" --> NOPV["No new Plan Version"]
+        PV --> R1
+        NOPV --> R1
+        NC2 --> R1
+    end
+
+    DICT -.-> S1
+    RULES -.-> S1
+    DICT -.-> S2
+    SPEC -.-> S2
+    RULES -.-> S2
+    DICT -.-> S3
+    SPEC -.-> S3
+    RULES -.-> S3
+
+    classDef llm fill:#1F3864,stroke:#0f1d38,color:#fff;
+    classDef store fill:#2e7d32,stroke:#1b4620,color:#fff;
+    classDef ctx fill:#7a5c00,stroke:#4d3a00,color:#fff;
+    classDef warn fill:#8c2f2f,stroke:#5c1f1f,color:#fff;
+    class S1,S2,S3 llm;
+    class J,VER,JV,PV store;
+    class DICT,SPEC,RULES ctx;
+    class ERR1,NC1,NC2 warn;
