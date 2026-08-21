@@ -8,8 +8,8 @@ This ticket adds no resolution logic (no call into an AI SDK, no `LanguageModel`
 
 **Status:** ready-for-agent
 
-- [ ] The environment schema gains optional provider key variables, and the app still boots with none of them set
-- [ ] A static catalog lists every supported model with its id, label, provider, and the env var required for it to be usable
-- [ ] Exactly one catalog entry is marked as the default, and it is Gemini Flash
-- [ ] A pure function reports whether a catalog entry's required key is present in the environment, with no side effects and no provider SDK involved
-- [ ] The module has no knowledge of tRPC, Next.js or the database
+- [x] The environment schema gains optional provider key variables, and the app still boots with none of them set
+- [x] A static catalog lists every supported model with its id, label, provider, and the env var required for it to be usable
+- [x] Exactly one catalog entry is marked as the default, and it is Gemini Flash
+- [x] A pure function reports whether a catalog entry's required key is present in the environment, with no side effects and no provider SDK involved
+- [x] The module has no knowledge of tRPC, Next.js or the database
