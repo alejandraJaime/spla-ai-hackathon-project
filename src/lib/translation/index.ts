@@ -1,7 +1,7 @@
 /**
  * The translation module's public surface: the Plan and Hierarchy contracts,
- * the domain knowledge the pipeline loads into prompts, and the module's
- * errors. Everything else in the module is internal.
+ * the §8 violation contract, the domain knowledge the pipeline loads into
+ * prompts, and the module's errors. Everything else in the module is internal.
  */
 export {
   Schema_AdEntity,
@@ -71,6 +71,23 @@ export type {
 } from './translation.types'
 
 export { splitSize } from './translation.size'
+
+/*
+ * The hierarchy sub-module's *contract* only. The pure rules themselves — the
+ * campaign-spec §8 pass, the §3 naming taxonomy, §1's Campaign Type resolution
+ * and the per-Campaign-Type split — are used by this module's own pipeline,
+ * which imports './hierarchy' directly. What crosses the module boundary is the
+ * violation shape: the pipeline persists it as jsonb and the review UI renders
+ * each violation against the entity it names.
+ */
+export {
+  Schema_HierarchyEntityType,
+  Schema_HierarchyViolation,
+  Schema_HierarchyViolationCode,
+  Schema_HierarchyViolations,
+} from './hierarchy'
+
+export type { HierarchyEntityType, HierarchyViolation, HierarchyViolationCode } from './hierarchy'
 
 export { dictionaryValues, readKnowledgeDocument } from './knowledge'
 
