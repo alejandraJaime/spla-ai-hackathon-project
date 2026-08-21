@@ -6,7 +6,7 @@ The Job holds the Plan: the messy grid normalised into something platform-agnost
 
 This is a single schema-constrained model call, not an agent: no tool-calling loop, no agent framework. Code owns the schema, the prompt, the validation and the plumbing; the model only does the semantic transformation. It runs on a 2-retry / 3-attempt budget, and a failed attempt's validation errors are fed into the next attempt as context so the model corrects a named problem rather than re-rolling. If the budget is exhausted the error surfaces and **no Job row exists** — there is no partial-Job state, because a job list with half-created jobs isn't trustworthy.
 
-**Blocked by:** 01, 03, 04a, 04b, 05
+**Blocked by:** 01, 03, 04a, 04b, 05b, 05c
 
 **Status:** ready-for-agent
 

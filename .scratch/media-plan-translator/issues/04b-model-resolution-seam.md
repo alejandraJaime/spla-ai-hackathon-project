@@ -8,7 +8,7 @@ Asking for a model whose key is absent throws a named app error rather than fail
 
 **Status:** ready-for-agent
 
-- [ ] A single function resolves a catalog model id to a `LanguageModel`, and it is the module's only injection point
-- [ ] A test substitutes a mock language model through this seam and drives a call end-to-end with no real provider involved
-- [ ] Requesting a model whose key is absent throws a named app error (an `AppError` subclass with a literal code) before any provider SDK call is attempted
-- [ ] The module has no knowledge of tRPC, Next.js or the database
+- [x] A single function resolves a catalog model id to a `LanguageModel`, and it is the module's only injection point
+- [x] A test substitutes a mock language model through this seam and drives a call end-to-end with no real provider involved
+- [x] Requesting a model whose key is absent throws a named app error (an `AppError` subclass with a literal code) before any provider SDK call is attempted
+- [x] The module has no knowledge of tRPC, Next.js or the database
