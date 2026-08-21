@@ -8,12 +8,12 @@ The plan and hierarchy stay `jsonb` blobs; the entity graph is deliberately not 
 
 **Status:** ready-for-agent
 
-- [ ] A generated migration applies cleanly against the Dockerized Postgres, and the tables use the scaffold's existing table-prefix helper
-- [ ] Seeding creates exactly one demo user, and re-running the seed doesn't duplicate it
-- [ ] A Job round-trips with its platform, model id and Plan `jsonb` intact
-- [ ] Two Campaign Types each get their own Hierarchy Version numbering: writing Display v1, Display v2 and Tracking v1 leaves Tracking at 1
-- [ ] A Hierarchy Version stores exactly one campaign, its status (`ok` | `needs_clarification`), its structured validation errors when the status is `needs_clarification`, and the change summary of the message that produced it
-- [ ] A Plan Version's pointer map resolves back to exactly the Hierarchy Versions it was written with, including a type pointing at a prior unchanged version
-- [ ] A message persists with zero, one and many resulting version ids
-- [ ] Tests follow the existing DB-backed integration pattern (Jest, real Postgres, connection closed after) with per-test data isolation, since these write more than one row
-- [ ] The module's table definitions are re-exported from the db schema barrel, appended at the end of the list
+- [x] A generated migration applies cleanly against the Dockerized Postgres, and the tables use the scaffold's existing table-prefix helper
+- [x] Seeding creates exactly one demo user, and re-running the seed doesn't duplicate it
+- [x] A Job round-trips with its platform, model id and Plan `jsonb` intact
+- [x] Two Campaign Types each get their own Hierarchy Version numbering: writing Display v1, Display v2 and Tracking v1 leaves Tracking at 1
+- [x] A Hierarchy Version stores exactly one campaign, its status (`ok` | `needs_clarification`), its structured validation errors when the status is `needs_clarification`, and the change summary of the message that produced it
+- [x] A Plan Version's pointer map resolves back to exactly the Hierarchy Versions it was written with, including a type pointing at a prior unchanged version
+- [x] A message persists with zero, one and many resulting version ids
+- [x] Tests follow the existing DB-backed integration pattern (Jest, real Postgres, connection closed after) with per-test data isolation, since these write more than one row
+- [x] The module's table definitions are re-exported from the db schema barrel, appended at the end of the list

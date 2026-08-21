@@ -1,0 +1,579 @@
+{
+  "id": "2a7a72a4-946e-4500-8d25-158ba78b8fe0",
+  "prevId": "91350258-a348-41ad-a0ed-ff45c055d653",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.t3-docker-scaffold_post": {
+      "name": "t3-docker-scaffold_post",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "byDefault",
+            "name": "t3-docker-scaffold_post_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "name_idx": {
+          "name": "name_idx",
+          "columns": [
+            {
+              "expression": "name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.t3-docker-scaffold_hierarchy_version": {
+      "name": "t3-docker-scaffold_hierarchy_version",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "jobId": {
+          "name": "jobId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "campaignType": {
+          "name": "campaignType",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "versionNumber": {
+          "name": "versionNumber",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hierarchy": {
+          "name": "hierarchy",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "hierarchy_version_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "validationErrors": {
+          "name": "validationErrors",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "changeSummary": {
+          "name": "changeSummary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "hierarchy_version_job_campaign_number_idx": {
+          "name": "hierarchy_version_job_campaign_number_idx",
+          "columns": [
+            {
+              "expression": "jobId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "campaignType",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "versionNumber",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "hierarchy_version_job_campaign_idx": {
+          "name": "hierarchy_version_job_campaign_idx",
+          "columns": [
+            {
+              "expression": "jobId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "campaignType",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "t3-docker-scaffold_hierarchy_version_jobId_t3-docker-scaffold_job_id_fk": {
+          "name": "t3-docker-scaffold_hierarchy_version_jobId_t3-docker-scaffold_job_id_fk",
+          "tableFrom": "t3-docker-scaffold_hierarchy_version",
+          "tableTo": "t3-docker-scaffold_job",
+          "columnsFrom": [
+            "jobId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "hierarchy_version_number_positive": {
+          "name": "hierarchy_version_number_positive",
+          "value": "\"t3-docker-scaffold_hierarchy_version\".\"versionNumber\" > 0"
+        },
+        "hierarchy_version_one_campaign": {
+          "name": "hierarchy_version_one_campaign",
+          "value": "jsonb_array_length(\"t3-docker-scaffold_hierarchy_version\".\"hierarchy\" -> 'campaigns') = 1"
+        },
+        "hierarchy_version_campaign_type_matches": {
+          "name": "hierarchy_version_campaign_type_matches",
+          "value": "\"t3-docker-scaffold_hierarchy_version\".\"hierarchy\" -> 'campaigns' -> 0 ->> 'campaignType' = \"t3-docker-scaffold_hierarchy_version\".\"campaignType\""
+        },
+        "hierarchy_version_validation_errors_match_status": {
+          "name": "hierarchy_version_validation_errors_match_status",
+          "value": "(\n        (\"t3-docker-scaffold_hierarchy_version\".\"status\" = 'ok' AND \"t3-docker-scaffold_hierarchy_version\".\"validationErrors\" IS NULL)\n        OR\n        (\n          \"t3-docker-scaffold_hierarchy_version\".\"status\" = 'needs_clarification'\n          AND jsonb_typeof(\"t3-docker-scaffold_hierarchy_version\".\"validationErrors\") = 'array'\n          AND jsonb_array_length(\"t3-docker-scaffold_hierarchy_version\".\"validationErrors\") > 0\n        )\n      )"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.t3-docker-scaffold_job_version": {
+      "name": "t3-docker-scaffold_job_version",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "jobId": {
+          "name": "jobId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "versionNumber": {
+          "name": "versionNumber",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "messageId": {
+          "name": "messageId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pointerMap": {
+          "name": "pointerMap",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "job_version_job_number_idx": {
+          "name": "job_version_job_number_idx",
+          "columns": [
+            {
+              "expression": "jobId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "versionNumber",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "job_version_message_idx": {
+          "name": "job_version_message_idx",
+          "columns": [
+            {
+              "expression": "messageId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "t3-docker-scaffold_job_version_jobId_t3-docker-scaffold_job_id_fk": {
+          "name": "t3-docker-scaffold_job_version_jobId_t3-docker-scaffold_job_id_fk",
+          "tableFrom": "t3-docker-scaffold_job_version",
+          "tableTo": "t3-docker-scaffold_job",
+          "columnsFrom": [
+            "jobId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "t3-docker-scaffold_job_version_messageId_t3-docker-scaffold_message_id_fk": {
+          "name": "t3-docker-scaffold_job_version_messageId_t3-docker-scaffold_message_id_fk",
+          "tableFrom": "t3-docker-scaffold_job_version",
+          "tableTo": "t3-docker-scaffold_message",
+          "columnsFrom": [
+            "messageId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "job_version_number_positive": {
+          "name": "job_version_number_positive",
+          "value": "\"t3-docker-scaffold_job_version\".\"versionNumber\" > 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.t3-docker-scaffold_job": {
+      "name": "t3-docker-scaffold_job",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "ownerId": {
+          "name": "ownerId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "platform": {
+          "name": "platform",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sourceFileRef": {
+          "name": "sourceFileRef",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "modelId": {
+          "name": "modelId",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "plan": {
+          "name": "plan",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "job_owner_idx": {
+          "name": "job_owner_idx",
+          "columns": [
+            {
+              "expression": "ownerId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "t3-docker-scaffold_job_ownerId_t3-docker-scaffold_user_id_fk": {
+          "name": "t3-docker-scaffold_job_ownerId_t3-docker-scaffold_user_id_fk",
+          "tableFrom": "t3-docker-scaffold_job",
+          "tableTo": "t3-docker-scaffold_user",
+          "columnsFrom": [
+            "ownerId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.t3-docker-scaffold_message": {
+      "name": "t3-docker-scaffold_message",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "jobId": {
+          "name": "jobId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "translation_message_role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "resultingVersionIds": {
+          "name": "resultingVersionIds",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "message_job_idx": {
+          "name": "message_job_idx",
+          "columns": [
+            {
+              "expression": "jobId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "t3-docker-scaffold_message_jobId_t3-docker-scaffold_job_id_fk": {
+          "name": "t3-docker-scaffold_message_jobId_t3-docker-scaffold_job_id_fk",
+          "tableFrom": "t3-docker-scaffold_message",
+          "tableTo": "t3-docker-scaffold_job",
+          "columnsFrom": [
+            "jobId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.t3-docker-scaffold_user": {
+      "name": "t3-docker-scaffold_user",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.hierarchy_version_status": {
+      "name": "hierarchy_version_status",
+      "schema": "public",
+      "values": [
+        "ok",
+        "needs_clarification"
+      ]
+    },
+    "public.translation_message_role": {
+      "name": "translation_message_role",
+      "schema": "public",
+      "values": [
+        "user",
+        "assistant"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

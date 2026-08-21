@@ -1,7 +1,8 @@
 /**
  * The translation module's public surface: the Plan and Hierarchy contracts,
  * the §8 violation contract, the domain knowledge the pipeline loads into
- * prompts, and the module's errors. Everything else in the module is internal.
+ * prompts, the module's errors, and the demo-user seed. The repository stays
+ * internal.
  */
 export {
   Schema_AdEntity,
@@ -39,6 +40,7 @@ export {
 export type {
   AdEntity,
   AdType,
+  AppendHierarchyVersionInput,
   Audience,
   CampaignEntity,
   CampaignObjective,
@@ -46,28 +48,41 @@ export type {
   CanonicalSize,
   Compatibility,
   Country,
+  CreateJobInput,
+  CreateMessageInput,
+  CreatePlanVersionInput,
   CreativeEntity,
   CreativeType,
+  DemoUserRecord,
   Device,
   DictionarySize,
   Hierarchy,
+  HierarchyVersionPointerMap,
+  HierarchyVersionRecord,
+  HierarchyVersionStatus,
   Inventory,
   IsoDate,
   ISizeParts,
+  ITranslationRepository,
+  JobRecord,
   LandingPageEntity,
   MediaFormat,
   MediaPlatform,
+  MessageRecord,
   MediaType,
   PlacementEntity,
   Plan,
+  PlanVersionRecord,
   PricingModel,
   Publisher,
   Region,
+  ResolvedPlanVersion,
   SiteEntity,
   Tactic,
   TacticChannel,
   TacticFormat,
   TacticToken,
+  TranslationMessageRole,
 } from './translation.types'
 
 export { splitSize } from './translation.size'
@@ -104,3 +119,5 @@ export {
   KnowledgeDocumentUnreadableError,
   UnknownDictionaryFieldError,
 } from './errors'
+
+export { seedDemoUser } from './translation.seed'
